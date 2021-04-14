@@ -7,5 +7,4 @@ public class MetaData {
     private String title;
     private String author;
     private String remark;
-    private String cover;
 }
