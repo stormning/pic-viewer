@@ -11,12 +11,12 @@ import java.util.List;
 public class PicController {
 
     @RequestMapping("/pic/{path}")
-    public Mono<byte[]> pic(@PathVariable("path") String path) {
+    public Mono<String> pic(@PathVariable("path") String path) {
         return Mono.empty();
     }
 
     @RequestMapping("/pics/{parentPath}")
-    public Mono<List<byte[]>> pics(@PathVariable("parentPath") String parentPath, int offset, int limit) {
+    public Mono<List<String>> pics(@PathVariable("parentPath") String parentPath, int offset, int limit) {
         return Mono.empty();
     }
 
