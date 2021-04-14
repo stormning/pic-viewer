@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,10 +16,14 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class MetaDataService {
+@Service
+public class PicService {
 
     @Setter
     private String metaDataFileName = "config.json";
+
+    @Setter
+    private int fetchSize = 20;
 
     @SneakyThrows
     public MetaData getMetaData(String path) {
@@ -51,7 +56,8 @@ public class MetaDataService {
             return Collections.emptyList();
         }
         List<MetaData> metas = Lists.newArrayList();
-        for (File file : files) {
+        List<File> subFiles = files.subList(offset, Math.min(files.size(), offset + fetchSize));
+        for (File file : subFiles) {
             metas.add(getMetaData(file));
         }
         return metas;
