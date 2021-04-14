@@ -4,30 +4,34 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
-public class PicService {
+public class FileService {
 
 
     private PicProperties picProperties;
 
-    public PicService(PicProperties picProperties) {
+    public FileService(PicProperties picProperties) {
         this.picProperties = picProperties;
     }
 
     @SneakyThrows
     public MetaData getMetaData(String path) {
-        return getMetaData(new File(path));
+        return getMetaData(new File(picProperties.getBasePath() + File.separator + path));
     }
 
     @SneakyThrows
@@ -50,20 +54,31 @@ public class PicService {
         return metaData;
     }
 
-    public List<MetaData> getMetaDataList(String path, int offset, MetaDataOrder order) {
-        List<File> files = getFiles(path, order);
-        if (offset >= files.size()) {
+    public List<MetaData> getMetaDataList(String path, int offset, FileOrder order) {
+        List<File> files = getFiles(path, offset, order);
+        if (CollectionUtils.isEmpty(files)) {
             return Collections.emptyList();
         }
         List<MetaData> metas = Lists.newArrayList();
-        List<File> subFiles = files.subList(offset, Math.min(files.size(), offset + picProperties.getFetchSize()));
-        for (File file : subFiles) {
+        for (File file : files) {
             metas.add(getMetaData(file));
         }
         return metas;
     }
 
-    private List<File> getFiles(String path, MetaDataOrder order) {
+    private List<File> getFiles(String parentPath, int offset, FileOrder order) {
+        List<File> files = getFiles(picProperties.getBasePath() + File.separator + parentPath, order);
+        if (offset >= files.size()) {
+            return Collections.emptyList();
+        }
+        return subFiles(files, offset);
+    }
+
+    private List<File> subFiles(List<File> files, int offset) {
+        return files.subList(offset, Math.min(files.size(), offset + picProperties.getFetchSize()));
+    }
+
+    private List<File> getFiles(String path, FileOrder order) {
         File file = new File(path);
         File[] files = file.listFiles();
         if (files != null && files.length > 0) {
@@ -71,7 +86,7 @@ public class PicService {
             fileList.sort((o1, o2) -> {
                 String o1Name = o1.getName();
                 String o2Name = o2.getName();
-                if (order == MetaDataOrder.NAME_ASC) {
+                if (order == FileOrder.NAME_ASC) {
                     return NumberUtils.toInt(o2Name) - NumberUtils.toInt(o1Name);
                 } else {
                     return o2Name.compareTo(o1Name);
@@ -83,4 +98,31 @@ public class PicService {
         return Collections.emptyList();
     }
 
+    public String getFile(String path, String aesKey) {
+        return getFile(new File(picProperties.getBasePath() + File.separator + path), aesKey);
+    }
+
+    public String getFile(File file, String aesKey) {
+        try {
+            String fileBase64 = Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file));
+            if (picProperties.isEncodeFile()) {
+                return AES.encrypt(fileBase64, aesKey, aesKey);
+            }
+            return fileBase64;
+        } catch (Exception e) {
+            return StringUtils.EMPTY;
+        }
+    }
+
+    public List<String> getFiles(String parentPath, int offset, FileOrder order, String aesKey) {
+        List<File> files = getFiles(parentPath, offset, order);
+        if (CollectionUtils.isEmpty(files)) {
+            return Collections.emptyList();
+        }
+        List<String> results = Lists.newArrayList();
+        for (File file : files) {
+            results.add(getFile(file, aesKey));
+        }
+        return results;
+    }
 }

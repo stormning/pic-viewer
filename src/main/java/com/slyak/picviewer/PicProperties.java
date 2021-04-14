@@ -9,4 +9,5 @@ public class PicProperties {
     private String metaConfigFile = "config.json";
     private String basePath;
     private int fetchSize = 20;
+    private boolean encodeFile = false;
 }

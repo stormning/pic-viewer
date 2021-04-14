@@ -1,5 +1,5 @@
 package com.slyak.picviewer;
 
-public enum MetaDataOrder {
+public enum FileOrder {
     NAME_ASC
 }

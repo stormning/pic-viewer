@@ -8,36 +8,39 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 @Controller
 public class PicController {
 
-    private PicService picService;
+    private FileService fileService;
 
     @Autowired
-    public PicController(PicService picService) {
-        this.picService = picService;
+    public PicController(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @RequestMapping("/pic/{path}")
-    public Mono<String> pic(@PathVariable("path") String path) {
-        return Mono.empty();
+    @ResponseBody
+    public Mono<String> pic(@PathVariable("path") String path, String token) {
+        return Mono.fromCallable(() -> fileService.getFile(path, token));
     }
 
     @RequestMapping("/pics/{parentPath}")
-    public Mono<List<String>> pics(@PathVariable("parentPath") String parentPath, int offset) {
-        return Mono.empty();
+    @ResponseBody
+    public Mono<List<String>> pics(@PathVariable("parentPath") String parentPath, int offset, String token) {
+        return Mono.fromCallable(() -> fileService.getFiles(parentPath, offset, FileOrder.NAME_ASC, token));
     }
 
     @RequestMapping("/metadata/{path}")
     @ResponseBody
     public Mono<MetaData> metadata(@PathVariable("path") String path) {
-        return Mono.fromCallable(() -> picService.getMetaData(path));
+        return Mono.fromCallable(() -> fileService.getMetaData(path));
     }
 
     @RequestMapping("/metadatas/{parentPath}")
     @ResponseBody
     public Mono<List<MetaData>> metadatas(@PathVariable("parentPath") String parentPath, int offset) {
-        return Mono.fromCallable(() -> picService.getMetaDataList(parentPath, offset, MetaDataOrder.NAME_ASC));
+        return Mono.fromCallable(() -> fileService.getMetaDataList(parentPath, offset, FileOrder.NAME_ASC));
     }
 }
