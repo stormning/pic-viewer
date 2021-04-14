@@ -3,7 +3,6 @@ package com.slyak.picviewer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -19,11 +18,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Service
 public class PicService {
 
-    @Setter
-    private String metaDataFileName = "config.json";
 
-    @Setter
-    private int fetchSize = 20;
+    private PicProperties picProperties;
+
+    public PicService(PicProperties picProperties) {
+        this.picProperties = picProperties;
+    }
 
     @SneakyThrows
     public MetaData getMetaData(String path) {
@@ -32,7 +32,7 @@ public class PicService {
 
     @SneakyThrows
     public MetaData getMetaData(File folder) {
-        File file = new File(folder, metaDataFileName);
+        File file = new File(folder, picProperties.getMetaConfigFile());
         FileInputStream fis = new FileInputStream(file);
         String json = IOUtils.toString(fis, UTF_8);
         JSONObject jsonObject = JSON.parseObject(json);
@@ -56,7 +56,7 @@ public class PicService {
             return Collections.emptyList();
         }
         List<MetaData> metas = Lists.newArrayList();
-        List<File> subFiles = files.subList(offset, Math.min(files.size(), offset + fetchSize));
+        List<File> subFiles = files.subList(offset, Math.min(files.size(), offset + picProperties.getFetchSize()));
         for (File file : subFiles) {
             metas.add(getMetaData(file));
         }
