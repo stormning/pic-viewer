@@ -7,7 +7,6 @@ import com.slyak.picviewer.util.AES;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,9 +16,9 @@ import org.springframework.util.CollectionUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -46,7 +45,7 @@ public class FileService {
         String json = IOUtils.toString(fis, UTF_8);
         JSONObject jsonObject = JSON.parseObject(json);
         MetaData metaData = toMetaData(jsonObject);
-        metaData.setPath(folder.getPath().replaceFirst(picProperties.getBasePath(), ""));
+        metaData.setPath(folder.getPath().replaceFirst(picProperties.getBasePath(), "").replaceFirst("/", ""));
         metaData.setName(folder.getName());
         return metaData;
     }
@@ -85,14 +84,15 @@ public class FileService {
 
     private List<File> getFiles(String path, FileOrder order) {
         File file = new File(path);
-        Collection<File> files = FileUtils.listFiles(file, HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE);
-        if (!CollectionUtils.isEmpty(files)) {
+        File[] files = file.listFiles();
+        if (files != null && files.length > 0) {
             List<File> fileList = Lists.newArrayList(files);
+            fileList = fileList.stream().filter(file1 -> !picProperties.getExcludes().contains(file1.getName())).collect(Collectors.toList());
             fileList.sort((o1, o2) -> {
                 String o1Name = o1.getName();
                 String o2Name = o2.getName();
                 if (order == FileOrder.NAME_ASC) {
-                    return NumberUtils.toInt(o2Name) - NumberUtils.toInt(o1Name);
+                    return NumberUtils.toInt(o1Name) - NumberUtils.toInt(o2Name);
                 } else {
                     return o2Name.compareTo(o1Name);
                 }

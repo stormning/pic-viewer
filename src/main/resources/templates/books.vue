@@ -12,7 +12,9 @@
 </head>
 <body>
 <div id="app">
-
+    <ul class="books" v-for="(book, idx) in books">
+        <li @click="`location.href=/book?path=${Base64.encode(book.path)}`">{{book.title}}</li>
+    </ul>
 </div>
 <script>
     var vm = new Vue({
@@ -23,8 +25,8 @@
         },
         mounted() {
             var that = this;
-            $.get('/mds/' + Base64.encode(this.queryIndex) +'&offset=0', function (data) {
-                console.log(data)
+            $.get('/mds/' + Base64.encode(this.queryIndex), function (data) {
+                that.books = data
             })
         }
     })
