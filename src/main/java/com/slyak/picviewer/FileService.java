@@ -6,26 +6,30 @@ import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
+@EnableConfigurationProperties(FileProperties.class)
 public class FileService {
 
 
-    private PicProperties picProperties;
+    private FileProperties picProperties;
 
-    public FileService(PicProperties picProperties) {
+    public FileService(FileProperties picProperties) {
         this.picProperties = picProperties;
     }
 
@@ -41,7 +45,7 @@ public class FileService {
         String json = IOUtils.toString(fis, UTF_8);
         JSONObject jsonObject = JSON.parseObject(json);
         MetaData metaData = toMetaData(jsonObject);
-        metaData.setPath(folder.getPath());
+        metaData.setPath(folder.getPath().replaceFirst(picProperties.getBasePath(), ""));
         metaData.setName(folder.getName());
         return metaData;
     }
@@ -80,8 +84,8 @@ public class FileService {
 
     private List<File> getFiles(String path, FileOrder order) {
         File file = new File(path);
-        File[] files = file.listFiles();
-        if (files != null && files.length > 0) {
+        Collection<File> files = FileUtils.listFiles(file, HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE);
+        if (!CollectionUtils.isEmpty(files)) {
             List<File> fileList = Lists.newArrayList(files);
             fileList.sort((o1, o2) -> {
                 String o1Name = o1.getName();
