@@ -11,4 +11,9 @@ public class BookController {
     public Mono<String> books() {
         return Mono.just("books");
     }
+
+    @RequestMapping("/book")
+    public Mono<String> book() {
+        return Mono.just("book");
+    }
 }

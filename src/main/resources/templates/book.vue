@@ -13,7 +13,7 @@
 <body>
 <div id="app">
     <ul class="books" v-for="(book, idx) in books">
-        <li @click="gotoBook(book)">{{book.title}}</li>
+        <li @click="`location.href=/book?path=${Base64.encode(book.path)}`">{{book.title}}</li>
     </ul>
 </div>
 <script>
@@ -22,11 +22,6 @@
         data: {
             books: [],
             queryIndex: 1
-        },
-        methods: {
-          gotoBook(book){
-              location.href = `/book?path=${Base64.encode(book.path)}`
-          }
         },
         mounted() {
             var that = this;
