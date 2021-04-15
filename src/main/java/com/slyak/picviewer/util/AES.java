@@ -1,4 +1,4 @@
-package com.slyak.picviewer;
+package com.slyak.picviewer.util;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;

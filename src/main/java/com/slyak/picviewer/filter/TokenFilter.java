@@ -1,4 +1,4 @@
-package com.slyak.picviewer;
+package com.slyak.picviewer.filter;
 
 
 import org.springframework.web.server.ServerWebExchange;

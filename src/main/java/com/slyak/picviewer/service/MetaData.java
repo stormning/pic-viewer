@@ -1,4 +1,4 @@
-package com.slyak.picviewer;
+package com.slyak.picviewer.service;
 
 import lombok.Data;
 

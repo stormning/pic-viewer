@@ -1,5 +1,8 @@
-package com.slyak.picviewer;
+package com.slyak.picviewer.controller;
 
+import com.slyak.picviewer.service.FileOrder;
+import com.slyak.picviewer.service.FileService;
+import com.slyak.picviewer.service.MetaData;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
