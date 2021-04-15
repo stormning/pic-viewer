@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -27,18 +27,26 @@
             noMore: false
         },
         methods: {
-            gotoChapter(book) {
+            gotoBook(book) {
                 location.href = `/chapter?path=${Base64.encode(book.path)}`
             },
             appendChapters() {
                 var that = this;
-                $.get('/mds/' + Base64.encode(bookPath), function (data) {
-                    that.chapters = that.chapters.concat(data);
+                $.get('/mds/' + Base64.encode(this.queryIndex), function (data) {
+                    if (data && data.length > 0) {
+                        that.chapters = that.chapters.concat(data);
+                        that.queryIndex = that.queryIndex + 1;
+                        setTimeout(function () {
+                            that.appendChapters()
+                        }, 200)
+                    } else {
+                        that.noMore = true
+                    }
                 })
-            },
-            mounted() {
-                this.appendChapters();
             }
+        },
+        mounted() {
+            this.appendBooks();
         }
     })
 </script>

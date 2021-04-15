@@ -21,18 +21,30 @@
         el: '#app',
         data: {
             books: [],
-            queryIndex: 1
+            queryIndex: 1,
+            noMore: false
         },
         methods: {
-          gotoBook(book){
-              location.href = `/book?path=${Base64.encode(book.path)}`
-          }
+            gotoBook(book) {
+                location.href = `/book?path=${Base64.encode(book.path)}`
+            },
+            appendBooks() {
+                var that = this;
+                $.get('/mds/' + Base64.encode(this.queryIndex), function (data) {
+                    if (data && data.length > 0) {
+                        that.books = that.books.concat(data);
+                        that.queryIndex = that.queryIndex + 1;
+                        setTimeout(function () {
+                            that.appendBooks()
+                        }, 200)
+                    } else {
+                        that.noMore = true
+                    }
+                })
+            }
         },
         mounted() {
-            var that = this;
-            $.get('/mds/' + Base64.encode(this.queryIndex), function (data) {
-                that.books = data
-            })
+            this.appendBooks();
         }
     })
 </script>
