@@ -6,20 +6,24 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-    <script src="/static/js/jquery-3.6.0.min.js"></script>
-    <script src="/static/js/base64.js"></script>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/base64.js"></script>
     <title>books</title>
 </head>
 <body>
+<div id="app">
+
+</div>
 <script>
     var vm = new Vue({
+        el: '#app',
         data: {
             books: [],
-            queryIndex : 1
+            queryIndex: 1
         },
-        mounted(){
+        mounted() {
             var that = this;
-            $.get('/md/'+Base64.encode(this.queryIndex), function (data) {
+            $.get('/mds/' + Base64.encode(this.queryIndex) +'&offset=0', function (data) {
                 console.log(data)
             })
         }

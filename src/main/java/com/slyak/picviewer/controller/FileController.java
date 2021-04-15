@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Mono;
 
@@ -41,7 +42,7 @@ public class FileController {
 
     @RequestMapping("/files/{parentPath}")
     @ResponseBody
-    public Mono<List<String>> pics(@PathVariable("parentPath") String parentPath, int offset, String token) {
+    public Mono<List<String>> pics(@PathVariable("parentPath") String parentPath, @RequestParam(defaultValue = "0") int offset, String token) {
         return Mono.fromCallable(() -> fileService.getFiles(base64Decode(parentPath), offset, FileOrder.NAME_ASC, token));
     }
 
@@ -53,7 +54,7 @@ public class FileController {
 
     @RequestMapping("/mds/{parentPath}")
     @ResponseBody
-    public Mono<List<MetaData>> metadatas(@PathVariable("parentPath") String parentPath, int offset) {
+    public Mono<List<MetaData>> metadatas(@PathVariable("parentPath") String parentPath, @RequestParam(defaultValue = "0") int offset) {
         return Mono.fromCallable(() -> fileService.getMetaDataList(base64Decode(parentPath), offset, FileOrder.NAME_ASC));
     }
 }
