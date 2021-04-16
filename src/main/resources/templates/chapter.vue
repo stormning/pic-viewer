@@ -17,8 +17,10 @@
         <img :src="`data:image/png;base64,${pic}`" v-for="(pic, idx) in pics"/>
     </div>
     <div class="no-more">
-        <div class="op" @click="goto(prev)" v-if="prev">上一章</div>
-        <div class="op" @click="goto(next)" v-if="next">下一章</div>
+        <div class="no-more-ops">
+            <div class="op" @click="goto(prev)" v-if="prev">上一章</div>
+            <div class="op" @click="goto(next)" v-if="next">下一章</div>
+        </div>
     </div>
 </div>
 <style type="text/css">
@@ -27,24 +29,26 @@
         margin: 0;
     }
 
-    .pics, .no-more {
+    .pics, .no-more-ops {
         margin: 0 auto;
         max-width: 800px;
-        border-left: 1px solid #999;
-        border-right: 1px solid #999;
     }
 
     .no-more {
-        display: flex;
-        background-color: aliceblue;
+        width: 100%;
         left: 0;
         position: fixed;
         bottom: 0;
-        width: 100%;
         z-index: 200;
+        border-top: 1px solid #ddd;
+        background-color: aliceblue;
     }
 
-    .no-more .op {
+    .no-more-ops {
+        display: flex;
+    }
+
+    .op {
         flex: 1 1 auto;
         display: flex;
         align-items: center;
@@ -52,7 +56,12 @@
         font-size: 18px;
         font-weight: 400;
         height: 60px;
-        border: 1px solid #999;
+        border-right: 1px solid #ddd;
+        opacity: .7;
+    }
+
+    .op:last-child {
+        border-right: 0 !important;
     }
 
     .pics img {
