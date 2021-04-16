@@ -14,5 +14,5 @@ public class FileProperties {
     private int fetchSize = 20;
     private boolean encodeFile = false;
     //ignore mac generated file
-    private List<String> excludes = Lists.newArrayList(".DS_Store");
+    private List<String> excludes = Lists.newArrayList(".DS_Store", "config.json");
 }

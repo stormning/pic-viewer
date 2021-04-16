@@ -23,8 +23,7 @@
         el: '#app',
         data: {
             chapters: [],
-            queryIndex: 1,
-            noMore: false
+            queryIndex: 1
         },
         methods: {
             gotoChapter(book) {
@@ -32,13 +31,13 @@
             },
             appendChapters() {
                 var that = this;
-                $.get('/mds/' + Base64.encode(bookPath), function (data) {
+                $.get('/mds/' + bookPath, function (data) {
                     that.chapters = that.chapters.concat(data);
                 })
-            },
-            mounted() {
-                this.appendChapters();
             }
+        },
+        mounted() {
+            this.appendChapters();
         }
     })
 </script>
