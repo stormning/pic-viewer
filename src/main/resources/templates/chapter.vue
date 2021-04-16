@@ -35,7 +35,6 @@
     }
 
     .no-more{
-        border: 1px solid #999;
         display: flex;
     }
 
@@ -44,9 +43,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 400;
-        height: 40px;
+        height: 60px;
+        border: 1px solid #999;
     }
 
     .pics img {
