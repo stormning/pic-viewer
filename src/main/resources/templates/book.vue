@@ -23,7 +23,8 @@
         el: '#app',
         data: {
             chapters: [],
-            queryIndex: 1
+            queryIndex: 0,
+            noMore: false
         },
         methods: {
             gotoChapter(book) {
@@ -31,8 +32,16 @@
             },
             appendChapters() {
                 var that = this;
-                $.get('/mds/' + bookPath, function (data) {
-                    that.chapters = that.chapters.concat(data);
+                $.get(`/mds/${bookPath}?offset=${queryIndex}`, function (data) {
+                    if (data && data.length > 0) {
+                        that.chapters = that.chapters.concat(data);
+                        that.queryIndex = that.queryIndex + data.length;
+                        setTimeout(function () {
+                            that.appendBooks()
+                        }, 200)
+                    } else {
+                        that.noMore = true
+                    }
                 })
             }
         },
