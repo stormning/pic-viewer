@@ -37,7 +37,7 @@
                         that.chapters = that.chapters.concat(data);
                         that.offset = that.offset + data.length;
                         setTimeout(function () {
-                            that.appendBooks()
+                            that.appendChapters()
                         }, 200)
                     } else {
                         that.noMore = true
