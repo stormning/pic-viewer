@@ -36,6 +36,12 @@
 
     .no-more{
         display: flex;
+        background-color: aliceblue;
+        left: 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 200;
     }
 
     .no-more .op{
