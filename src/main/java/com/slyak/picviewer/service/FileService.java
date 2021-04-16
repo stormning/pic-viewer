@@ -45,7 +45,7 @@ public class FileService {
         String json = IOUtils.toString(fis, UTF_8);
         JSONObject jsonObject = JSON.parseObject(json);
         MetaData metaData = toMetaData(jsonObject);
-        metaData.setPath(StringUtils.removeStart(folder.getPath(),picProperties.getBasePath()));
+        metaData.setPath(StringUtils.removeStart(folder.getPath(), picProperties.getBasePath()));
         metaData.setName(folder.getName());
         return metaData;
     }
@@ -58,8 +58,8 @@ public class FileService {
         return metaData;
     }
 
-    public List<MetaData> getMetaDataList(String path, int offset, FileOrder order) {
-        List<File> files = getFiles(path, offset, order);
+    public List<MetaData> getMetaDataList(String path, int offset, int limit, FileOrder order) {
+        List<File> files = getFiles(path, offset, limit, order);
         if (CollectionUtils.isEmpty(files)) {
             return Collections.emptyList();
         }
@@ -70,24 +70,27 @@ public class FileService {
         return metas;
     }
 
-    private List<File> getFiles(String parentPath, int offset, FileOrder order) {
+    private List<File> getFiles(String parentPath, int offset, int limit, FileOrder order) {
         List<File> files = getFiles(picProperties.getBasePath() + File.separator + parentPath, order);
         if (offset >= files.size()) {
             return Collections.emptyList();
         }
-        return subFiles(files, offset);
+        return subFiles(files, offset, getLimit(limit));
     }
 
-    private List<File> subFiles(List<File> files, int offset) {
-        return files.subList(offset, Math.min(files.size(), offset + picProperties.getFetchSize()));
+    private int getLimit(int limit) {
+        return limit <= 0 ? picProperties.getFetchSize() : limit;
+    }
+
+    private List<File> subFiles(List<File> files, int offset, int limit) {
+        return files.subList(offset, Math.min(files.size(), offset + limit));
     }
 
     private List<File> getFiles(String path, FileOrder order) {
         File file = new File(path);
         File[] files = file.listFiles();
         if (files != null && files.length > 0) {
-            List<File> fileList = Lists.newArrayList(files);
-            fileList = fileList.stream().filter(file1 -> !picProperties.getExcludes().contains(file1.getName())).collect(Collectors.toList());
+            List<File> fileList = filter(files);
             fileList.sort((o1, o2) -> {
                 String o1Name = o1.getName();
                 String o2Name = o2.getName();
@@ -101,6 +104,12 @@ public class FileService {
             return fileList;
         }
         return Collections.emptyList();
+    }
+
+    private List<File> filter(File[] files) {
+        List<File> fileList = Lists.newArrayList(files);
+        fileList = fileList.stream().filter(file1 -> !picProperties.getExcludes().contains(file1.getName())).collect(Collectors.toList());
+        return fileList;
     }
 
     public String getFile(String path, String aesKey) {
@@ -119,8 +128,8 @@ public class FileService {
         }
     }
 
-    public List<String> getFiles(String parentPath, int offset, FileOrder order, String aesKey) {
-        List<File> files = getFiles(parentPath, offset, order);
+    public List<String> getFiles(String parentPath, int offset, int limit, FileOrder order, String aesKey) {
+        List<File> files = getFiles(parentPath, offset, limit, order);
         if (CollectionUtils.isEmpty(files)) {
             return Collections.emptyList();
         }
@@ -129,5 +138,20 @@ public class FileService {
             results.add(getFile(file, aesKey));
         }
         return results;
+    }
+
+    public List<MetaData> getSiblings(String path) {
+        File file = new File(picProperties.getBasePath() + path);
+        File parentFile = file.getParentFile();
+        File[] files = parentFile.listFiles();
+        if (files == null) {
+            return Collections.emptyList();
+        }
+        List<File> filtered = filter(files);
+        List<MetaData> result = Lists.newArrayList();
+        for (File f : filtered) {
+            result.add(getMetaData(f));
+        }
+        return result;
     }
 }
