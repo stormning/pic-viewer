@@ -29,8 +29,8 @@ public class FileService {
 
     private FileProperties picProperties;
 
-    public FileService(FileProperties picProperties) {
-        this.picProperties = picProperties;
+    public FileService(FileProperties fileProperties) {
+        this.picProperties = fileProperties;
     }
 
     @SneakyThrows
@@ -92,8 +92,8 @@ public class FileService {
         if (files != null && files.length > 0) {
             List<File> fileList = filter(files);
             fileList.sort((o1, o2) -> {
-                String o1Name = o1.getName();
-                String o2Name = o2.getName();
+                String o1Name = StringUtils.split(o1.getName(),".")[0];
+                String o2Name = StringUtils.split(o2.getName(),".")[0];
                 if (order == FileOrder.NAME_ASC) {
                     return NumberUtils.toInt(o1Name) - NumberUtils.toInt(o2Name);
                 } else {
@@ -154,4 +154,6 @@ public class FileService {
         }
         return result;
     }
+
+
 }

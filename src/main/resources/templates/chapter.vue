@@ -78,12 +78,12 @@
             },
             appendPics() {
                 var that = this;
-                that.loading=true;
+                that.loading = true;
                 $.get(`/files/${chapterPath}?offset=${that.offset}&limit=10`, function (data) {
                     if (data && data.length > 0) {
                         that.pics = that.pics.concat(data);
                         that.offset = that.offset + 10;
-                        that.loading=false;
+                        that.loading = false;
                     } else {
                         that.noMore = true
                     }
