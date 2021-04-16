@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -13,31 +13,44 @@
 </head>
 <body>
 <div id="app">
-    <ul class="books" v-for="(chapter, idx) in chapters">
-        <li @click="`location.href=/book?path=${Base64.encode(chapter.path)}`">{{chapter.title}}</li>
-    </ul>
+    <div class="pics">
+        <img :src="`data:image/png;base64,${pic}`" v-for="(pic, idx) in pics"/>
+    </div>
 </div>
+<style type="text/css">
+    .pics {
+        margin: 0 auto;
+        max-width: 800px;
+        border-left: 1px solid #999;
+        border-right: 1px solid #999;
+    }
+
+    .pics img {
+        display: block;
+        width: 100%;
+    }
+</style>
 <script>
-    var bookPath = getQueryVariable('path');
+    var chapterPath = getQueryVariable('path');
     var vm = new Vue({
         el: '#app',
         data: {
-            chapters: [],
-            queryIndex: 1,
+            pics: [],
+            offset: 0,
             noMore: false
         },
         methods: {
             gotoBook(book) {
                 location.href = `/chapter?path=${Base64.encode(book.path)}`
             },
-            appendChapters() {
+            appendPics() {
                 var that = this;
-                $.get('/mds/' + Base64.encode(this.queryIndex), function (data) {
+                $.get(`/files/${chapterPath}?offset=${that.offset}`, function (data) {
                     if (data && data.length > 0) {
-                        that.chapters = that.chapters.concat(data);
-                        that.queryIndex = that.queryIndex + 1;
+                        that.pics = that.pics.concat(data);
+                        that.offset = that.offset + 1;
                         setTimeout(function () {
-                            that.appendChapters()
+                            that.appendPics()
                         }, 200)
                     } else {
                         that.noMore = true
@@ -46,7 +59,7 @@
             }
         },
         mounted() {
-            this.appendBooks();
+            this.appendPics();
         }
     })
 </script>

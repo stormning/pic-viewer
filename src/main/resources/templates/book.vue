@@ -14,7 +14,7 @@
 <body>
 <div id="app">
     <ul class="books" v-for="(chapter, idx) in chapters">
-        <li @click="`location.href=/book?path=${Base64.encode(chapter.path)}`">{{chapter.title}}</li>
+        <li @click="gotoChapter(chapter)">{{chapter.title}}</li>
     </ul>
 </div>
 <script>
@@ -27,9 +27,6 @@
             noMore: false
         },
         methods: {
-            gotoChapter(book) {
-                location.href = `/chapter?path=${Base64.encode(book.path)}`
-            },
             appendChapters() {
                 var that = this;
                 $.get(`/mds/${bookPath}?offset=${that.offset}`, function (data) {
@@ -43,6 +40,9 @@
                         that.noMore = true
                     }
                 })
+            },
+            gotoChapter(chapter) {
+                location.href = `/chapter?path=${Base64.encode(chapter.path)}`
             }
         },
         mounted() {
