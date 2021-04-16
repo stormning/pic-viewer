@@ -23,7 +23,7 @@
         el: '#app',
         data: {
             chapters: [],
-            queryIndex: 0,
+            offset: 0,
             noMore: false
         },
         methods: {
@@ -32,10 +32,10 @@
             },
             appendChapters() {
                 var that = this;
-                $.get(`/mds/${bookPath}?offset=${queryIndex}`, function (data) {
+                $.get(`/mds/${bookPath}?offset=${that.offset}`, function (data) {
                     if (data && data.length > 0) {
                         that.chapters = that.chapters.concat(data);
-                        that.queryIndex = that.queryIndex + data.length;
+                        that.offset = that.offset + data.length;
                         setTimeout(function () {
                             that.appendBooks()
                         }, 200)
