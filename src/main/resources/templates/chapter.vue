@@ -34,7 +34,7 @@
         border-right: 1px solid #999;
     }
 
-    .no-more{
+    .no-more {
         display: flex;
         background-color: aliceblue;
         left: 0;
@@ -44,7 +44,7 @@
         z-index: 200;
     }
 
-    .no-more .op{
+    .no-more .op {
         flex: 1 1 auto;
         display: flex;
         align-items: center;
@@ -69,7 +69,8 @@
             offset: 0,
             prev: null,
             next: null,
-            noMore: false
+            noMore: false,
+            loading: false
         },
         methods: {
             goto(path) {
@@ -77,22 +78,24 @@
             },
             appendPics() {
                 var that = this;
+                that.loading=true;
                 $.get(`/files/${chapterPath}?offset=${that.offset}&limit=10`, function (data) {
                     if (data && data.length > 0) {
                         that.pics = that.pics.concat(data);
                         that.offset = that.offset + 10;
+                        that.loading=false;
                     } else {
                         that.noMore = true
                     }
                 })
             },
-            initPrevNext(){
+            initPrevNext() {
                 var that = this;
                 $.get(`/md-prev-next/${chapterPath}`, function (data) {
-                    if (data[0]){
+                    if (data[0]) {
                         that.prev = data[0].path;
                     }
-                    if (data[1]){
+                    if (data[1]) {
                         that.next = data[1].path;
                     }
                 })
@@ -104,7 +107,11 @@
                     var scrollHeight = $(document).height();
                     var windowHeight = $(this).height();
                     if (scrollTop + windowHeight + 15 >= scrollHeight) {
-                        that.appendPics();
+                        setTimeout(function () {
+                            if (!that.loading) {
+                                that.appendPics();
+                            }
+                        }, 100)
                     }
                 });
             }
