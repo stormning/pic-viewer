@@ -16,7 +16,7 @@
     <div class="pics">
         <img :src="`data:image/png;base64,${pic}`" v-for="(pic, idx) in pics"/>
     </div>
-    <div class="no-more" v-if="noMore">
+    <div class="no-more">
         <div class="op" @click="goto(prev)" v-if="prev">上一章</div>
         <div class="op" @click="goto(next)" v-if="next">下一章</div>
     </div>
@@ -35,7 +35,6 @@
     }
 
     .no-more{
-        display: flex;
         background-color: aliceblue;
         left: 0;
         position: fixed;
