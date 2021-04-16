@@ -45,7 +45,7 @@ public class FileService {
         String json = IOUtils.toString(fis, UTF_8);
         JSONObject jsonObject = JSON.parseObject(json);
         MetaData metaData = toMetaData(jsonObject);
-        metaData.setPath(folder.getPath().replaceFirst(picProperties.getBasePath(), ""));
+        metaData.setPath(StringUtils.removeStart(folder.getPath(),picProperties.getBasePath()));
         metaData.setName(folder.getName());
         return metaData;
     }
