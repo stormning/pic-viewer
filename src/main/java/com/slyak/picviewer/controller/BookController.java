@@ -7,6 +7,11 @@ import reactor.core.publisher.Mono;
 @Controller
 public class BookController {
 
+    @RequestMapping({"/", ""})
+    public String index() {
+        return "redirect:/books";
+    }
+
     @RequestMapping("/books")
     public Mono<String> books() {
         return Mono.just("books");
