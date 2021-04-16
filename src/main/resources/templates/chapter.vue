@@ -35,6 +35,7 @@
     }
 
     .no-more{
+        display: flex;
         background-color: aliceblue;
         left: 0;
         position: fixed;
