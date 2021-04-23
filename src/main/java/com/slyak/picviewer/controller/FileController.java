@@ -65,7 +65,7 @@ public class FileController {
             for (int i = 0; i < siblings.size(); i++) {
                 MetaData metaData = siblings.get(i);
                 if (Objects.equals(metaData.getPath(), realPath)) {
-                    if (i > 1) {
+                    if (i >= 1) {
                         prevNext.add(0, siblings.get(i - 1));
                     } else {
                         prevNext.add(0, null);

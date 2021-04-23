@@ -72,7 +72,7 @@ public class FileService {
 
     private List<File> getFiles(String parentPath, int offset, int limit, FileOrder order) {
         List<File> files = getFiles(picProperties.getBasePath() + File.separator + parentPath, order);
-        if (offset >= files.size()) {
+        if (offset >= files.size() - 1) {
             return Collections.emptyList();
         }
         return subFiles(files, offset, getLimit(limit));
@@ -91,19 +91,23 @@ public class FileService {
         File[] files = file.listFiles();
         if (files != null && files.length > 0) {
             List<File> fileList = filter(files);
-            fileList.sort((o1, o2) -> {
-                String o1Name = StringUtils.split(o1.getName(),".")[0];
-                String o2Name = StringUtils.split(o2.getName(),".")[0];
-                if (order == FileOrder.NAME_ASC) {
-                    return NumberUtils.toInt(o1Name) - NumberUtils.toInt(o2Name);
-                } else {
-                    return o2Name.compareTo(o1Name);
-                }
-
-            });
+            sortFiles(order, fileList);
             return fileList;
         }
         return Collections.emptyList();
+    }
+
+    private void sortFiles(FileOrder order, List<File> fileList) {
+        fileList.sort((o1, o2) -> {
+            String o1Name = StringUtils.split(o1.getName(), ".")[0];
+            String o2Name = StringUtils.split(o2.getName(), ".")[0];
+            if (order == FileOrder.NAME_ASC) {
+                return NumberUtils.toInt(o1Name) - NumberUtils.toInt(o2Name);
+            } else {
+                return o2Name.compareTo(o1Name);
+            }
+
+        });
     }
 
     private List<File> filter(File[] files) {
@@ -148,6 +152,7 @@ public class FileService {
             return Collections.emptyList();
         }
         List<File> filtered = filter(files);
+        sortFiles(FileOrder.NAME_ASC, filtered);
         List<MetaData> result = Lists.newArrayList();
         for (File f : filtered) {
             result.add(getMetaData(f));
