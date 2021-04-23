@@ -145,19 +145,7 @@ public class FileService {
     }
 
     public List<MetaData> getSiblings(String path) {
-        File file = new File(picProperties.getBasePath() + path);
-        File parentFile = file.getParentFile();
-        File[] files = parentFile.listFiles();
-        if (files == null) {
-            return Collections.emptyList();
-        }
-        List<File> filtered = filter(files);
-        sortFiles(FileOrder.NAME_ASC, filtered);
-        List<MetaData> result = Lists.newArrayList();
-        for (File f : filtered) {
-            result.add(getMetaData(f));
-        }
-        return result;
+        return getMetaDataList(StringUtils.substring(path, 0, path.lastIndexOf(File.separator)), 0, Integer.MAX_VALUE, FileOrder.NAME_ASC);
     }
 
 
