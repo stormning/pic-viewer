@@ -72,7 +72,7 @@ public class FileService {
 
     private List<File> getFiles(String parentPath, int offset, int limit, FileOrder order) {
         List<File> files = getFiles(picProperties.getBasePath() + File.separator + parentPath, order);
-        if (offset >= files.size() - 1) {
+        if (offset >= files.size()) {
             return Collections.emptyList();
         }
         return subFiles(files, offset, getLimit(limit));
